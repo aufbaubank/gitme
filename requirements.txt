@@ -1,0 +1,9 @@
+docker-compose==1.25.4
+GitPython==3.1.0
+pytest==5.4.1
+pytest-console-scripts==0.2.0
+pytest-cov==2.8.1
+pytest-runner==5.2
+requests==2.23.0
+requests-mock==1.7.0
+tox==3.14.5
