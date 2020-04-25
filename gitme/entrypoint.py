@@ -32,12 +32,12 @@ def create_argparser(args):
     argp.add_argument(
         '-g', '--gitrepo',
         metavar='gitrepo', default=os.getcwd(), type=str,
-        help='repository location'
+        help='repository location, default: cwd'
     )
     argp.add_argument(
         '-b', '--branch',
         metavar='branch', default='gitme/update', type=str,
-        help='branch name'
+        help='branch name, default: gitme/update'
     )
     argp.add_argument(
         '-V', '--version',
@@ -47,7 +47,7 @@ def create_argparser(args):
     argp.add_argument(
         '-l', '--loglevel',
         default='critical', type=str,
-        help='loglevel: critical, error, warning, info, debug'
+        help='loglevel: critical(default), error, warning, info, debug'
     )
 
     argp.add_argument('-v', '--verbose', action='count', default=0)
@@ -56,8 +56,13 @@ def create_argparser(args):
     return arguments
 
 
-def main(arg_ary):
-    args = create_argparser(arg_ary)
+def main():
+
+    argv = sys.argv[1:]
+    if len(argv) == 0:
+        argv = ['--help']
+
+    args = create_argparser(argv)
     configure_logger(args)
     logger = logging.getLogger('main')
 
@@ -73,7 +78,7 @@ def main(arg_ary):
             sys.exit(0)
 
         if not git.create_update_branch():
-            logger.info('changes already commited to update branch')
+            logger.info('changes already committed to update branch')
         else:
             logger.info('changes need to be pushed')
             git.push()
@@ -87,4 +92,4 @@ def main(arg_ary):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()
