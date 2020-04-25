@@ -7,7 +7,7 @@ import os
 
 class GitlabClient:
 
-    token_id = 'SMERGER_TOKEN'
+    token_id = 'GITME_TOKEN'
 
     def __init__(self, args):
 
