@@ -31,7 +31,7 @@ def create_argparser(args):
     )
     argp.add_argument(
         '-g', '--gitrepo',
-        metavar='gitrepo', default=os.getcwd(), type=str,
+        metavar='gitrepo', default='', type=str,
         help='repository location, default: cwd'
     )
     argp.add_argument(
