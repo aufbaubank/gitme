@@ -1,31 +1,23 @@
 dist: bionic
 language: python
-
 matrix:
   include:
-    - python: 3.8
-      env: TOXENV=py38
-    - python: 3.6
-      env: TOXENV=py36
-
+  - python: 3.8
+    env: TOXENV=py38
+  - python: 3.6
+    env: TOXENV=py36
 script:
-  - tox
-
+- tox
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
-
+- bash <(curl -s https://codecov.io/bash)
 deploy:
   provider: pypi
-  user: "__token__"
+  user: __token__
   password:
-    secure: "NXd1LiuVF8xwAuwIW+5Pbq+lLjUDXMQEp8Kl5vlIn8Pb+quEwq/GNPmecdR+wcyCqTMoYwjtZe2BAqkGZYyNuyMq4ZzfZ9pox9Ay9f8MZpV3fY2BGUE8Co98AyakKvHWs/ulC3RFxNzcTrd94hHR4p0feDMO3eFxw1XPFjFXSiYLSC+/9l4JUz4LV8nnC8s2Y+qmBLwb7cB67vA2EyinhjBgTDOyeRybyIaU1CvZouVFhppROpHDX+ugk0FDfzzWYYes73tJj+VFw5am8+4TwsmE+/9mwNg28zKsTi8APypHQ/4Te9NkB3jdx5qvRybnVcY/3NnlnbXLsYmc4yYRfLf8/xdmJVb9s7Op1v9eBGA/oCjbCzwRQhT5k/CwCV9yLM8rNNV9g2SqVMMND22yDAWmQ8xkF1ydqjkYH/K7rBGkIjdoS9+miUeG5YDKwJAUR/Fst/GtJvTagxzU/hj/NkMYeGNYUGGE4LyTpI7qkHPlHVQxhacaUcYkYM5QpAbQPSbGEFuhFsnel3qabmgudxgSscWO53PnWjrBiR5Epw1RjQ+4UkfLijk+a5F59giMu7Wg3FT81Wv6pffA/+3A2/IMXVAw43+CuFsuuHJvCXEknaebPdJxNRSb+lGNgrv0SGpda2J5ngrWNQnRkLkMVHE1JDJ8Sqr//mVNa3a3ilM="
-  distributions: "sdist bdist_wheel"
+    secure: YW0ckst2KxrHWeVdZCQhQD6zdxiEXpCP/43OzhENdrH6VIs0sCo1aNKgR1I8CLg1bnmEWpHcrTElJwivLxO5VtjWde5rUouz5SImHm8GT+BEdk62VqhU7C0Dfr70UAsQ9fZTeDwXV15R25oLzD8+zQcaQrOM/0UjkJiGRfbV8XALJZ98T04pw8XysITj3P4EcPiY72BZMuG0pNHeWM0+u/PMttYtFjLNoMIqkXvFerrPOppg1yDnfS5leorDtsB+2FL2xXF7IP617+Iw2vYqov9Mt3LewV1EQH9A6Lgx/suZviNs1vojsFUgEZSaOCh1nkGE0SuzO2T+VOYRLvAUBeJQemVsXZXB09cAp3MRGBDnxo0wRk0XUa3p6amS2hL23HRKCd8Qk9JSRkFF+0AbyVe/PvRJr2wt/eVRNOxIcuXYIpv3TYc+rp8N8whUzbwZ45FnWeVCTxW/xSsdieDpcxW0xiAQ7dgfbjBLQlBVnn0V9nPPjnoknsY0/9Y8fllwqMdXHfIaxTBdWstdQn7be4W2Q1jx5eejJjp5YWMNInoHNr1yNA2B/bonSZCDoxplXZtPvRz8Xh6EI0IlvcrYlfwBoeLoyv0g5xyGWTqCtGCIScgtaN1ddurV6U76+Jo/1tI0EN7v/LnvCsBtiq1K+jCN3JcrhmqQJWHf/oq/MAA=
+  distributions: sdist bdist_wheel
   skip_existing: true
-  on:
-    tags: true
-    branch: production
-
 notifications:
   email:
-    - henne64@googlemail.com
-    - daniel.henneberg@aufbaubank.de
+  - henne64@googlemail.com
+  - daniel.henneberg@aufbaubank.de
