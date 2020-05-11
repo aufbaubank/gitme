@@ -14,7 +14,7 @@ class GitlabClient:
         self.branch = args.branch
         self.commit_message = 'update files'
         self.automerge = args.automerge
-        self.git_dir = args.repo
+        self.git_dir = args.gitrepo
 
         if args.pat == '' and \
                 GitlabClient.token_id in os.environ and \
@@ -23,15 +23,7 @@ class GitlabClient:
         else:
             self.token = args.pat
 
-        self.project_name = self.__git_project_name()
-        self.url = \
-            '{0}/api/v4/projects/{1}'.format(
-                args.url,
-                urllib.parse.quote(self.project_name, safe=''))
-
-    def __git_project_name(self):
-
-        git_remote = subprocess.run(
+        git_remote_url = subprocess.run(
             [
                 'git',
                 '-C',
@@ -41,11 +33,22 @@ class GitlabClient:
                 'origin'
             ],
             stdout=subprocess.PIPE
-        )
+        ).stdout.splitlines()[0].decode('utf-8')
 
-        first_line = git_remote.stdout.splitlines()[0].decode('utf-8')
+        self.project_name = self.extract_giltab_project_name(git_remote_url)
+        self.url = \
+            '{0}/api/v4/projects/{1}'.format(
+                args.url,
+                urllib.parse.quote(self.project_name, safe=''))
 
-        stripped_method = first_line.split('://', 1)[1:]
+    @staticmethod
+    def extract_giltab_project_name(first_line):
+
+        if '://' in first_line:
+            stripped_method = first_line.split('://', 1)[1:]
+        else:
+            stripped_method = [first_line]
+
         stripped_connect = '/'.join(stripped_method[0].split('/', 1)[1:])
         stripped_git = stripped_connect
 
