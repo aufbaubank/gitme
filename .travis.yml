@@ -23,6 +23,7 @@ deploy:
   skip_existing: true
   on:
     tags: true
+    branch: production
 
 notifications:
   email:
