@@ -3,6 +3,7 @@ import urllib.parse
 import subprocess
 import logging
 import os
+import re
 
 
 class GitlabClient:
@@ -14,7 +15,7 @@ class GitlabClient:
         self.branch = args.branch
         self.commit_message = 'update files'
         self.automerge = args.automerge
-        self.git_dir = args.repo
+        self.git_dir = args.gitrepo
 
         if args.pat == '' and \
                 GitlabClient.token_id in os.environ and \
@@ -23,15 +24,30 @@ class GitlabClient:
         else:
             self.token = args.pat
 
-        self.project_name = self.__git_project_name()
-        self.url = \
-            '{0}/api/v4/projects/{1}'.format(
-                args.url,
-                urllib.parse.quote(self.project_name, safe=''))
+        self.port_pattern = re.compile(':[0-9]*(/)?')
+        self.baseurl = args.url
 
-    def __git_project_name(self):
+    def extract_gitlab_project_name(self, first_line):
 
-        git_remote = subprocess.run(
+        if '://' in first_line:
+            stripped_method = first_line.split('://', 1)[1:]
+        else:
+            stripped_method = [first_line]
+
+        # replace ":22/" with a /, now / is the very first character
+        quick_and_dirty = re.sub(self.port_pattern, '/', stripped_method[0])
+
+        stripped_connect = '/'.join(quick_and_dirty.split('/', 1)[1:])
+        stripped_git = stripped_connect
+
+        if stripped_git.endswith('.git'):
+            stripped_git = stripped_git[:-4]
+
+        return stripped_git
+
+    def project_url(self):
+
+        git_remote_url = subprocess.run(
             [
                 'git',
                 '-C',
@@ -41,18 +57,16 @@ class GitlabClient:
                 'origin'
             ],
             stdout=subprocess.PIPE
-        )
+        ).stdout.splitlines()[0].decode('utf-8')
 
-        first_line = git_remote.stdout.splitlines()[0].decode('utf-8')
+        project_name = self.extract_gitlab_project_name(git_remote_url)
 
-        stripped_method = first_line.split('://', 1)[1:]
-        stripped_connect = '/'.join(stripped_method[0].split('/', 1)[1:])
-        stripped_git = stripped_connect
+        url = \
+            '{0}/api/v4/projects/{1}'.format(
+                self.baseurl,
+                urllib.parse.quote(project_name, safe=''))
 
-        if stripped_git.endswith('.git'):
-            stripped_git = stripped_git[:-4]
-
-        return stripped_git
+        return url
 
     def __req(self, method, endpoint, **kwargs):
 
@@ -64,7 +78,7 @@ class GitlabClient:
             "Private-Token": self.token
         }
 
-        url = self.url + endpoint
+        url = self.project_url() + endpoint
         response = getattr(requests, method)(
             url,
             params=params,
