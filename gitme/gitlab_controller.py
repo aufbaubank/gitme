@@ -45,21 +45,27 @@ class GitlabClient:
 
         return stripped_git
 
+    def git_remote_url(self):
+
+        command = ["git"]
+        options = []
+        subcommand = [
+            'remote',
+            'get-url',
+            'origin'
+        ]
+
+        if self.git_dir != '':
+            options = options + ['-C', self.git_dir]
+
+        cmd_result = subprocess.run(
+            command + options + subcommand, stdout=subprocess.PIPE)
+
+        return cmd_result.stdout.splitlines()[0].decode('utf-8')
+
     def project_url(self):
 
-        git_remote_url = subprocess.run(
-            [
-                'git',
-                '-C',
-                self.git_dir,
-                'remote',
-                'get-url',
-                'origin'
-            ],
-            stdout=subprocess.PIPE
-        ).stdout.splitlines()[0].decode('utf-8')
-
-        project_name = self.extract_gitlab_project_name(git_remote_url)
+        project_name = self.extract_gitlab_project_name(self.git_remote_url())
 
         url = \
             '{0}/api/v4/projects/{1}'.format(
