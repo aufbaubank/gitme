@@ -1,6 +1,6 @@
 from gitme.entrypoint import create_argparser
 from gitme.gitlab_controller import GitlabClient
-
+import re
 
 class TestGitlabController:
 
@@ -78,13 +78,17 @@ class TestGitlabController:
 
     def test_git_remote_url(self):
 
+        url_regex = re.compile('^(https://|git@)github.com[:|/]aufbaubank/gitme.git$')
+
         args = create_argparser(TestGitlabController.minimal_args)
         gl_client = GitlabClient(args)
 
         remote_url = gl_client.git_remote_url()
 
         assert isinstance(remote_url, str)
-        assert remote_url == 'git@github.com:aufbaubank/gitme.git'
+        assert 'github.com' in remote_url
+        assert 'aufbaubank/gitme.git' in remote_url
+        assert re.match(url_regex, remote_url)
 
     def test_project_url(self):
 
