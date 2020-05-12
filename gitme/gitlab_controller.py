@@ -45,23 +45,42 @@ class GitlabClient:
 
         return stripped_git
 
+    @staticmethod
+    def run_command(argv):
+        return subprocess.run(argv, stdout=subprocess.PIPE).stdout
+
     def git_remote_url(self):
 
         command = ["git"]
         options = []
         subcommand = [
             'remote',
-            'get-url',
-            'origin'
+            '-v',
         ]
 
         if self.git_dir != '':
             options = options + ['-C', self.git_dir]
 
-        cmd_result = subprocess.run(
-            command + options + subcommand, stdout=subprocess.PIPE)
+        # get the second field from first line
+        #
+        # git remote -v
+        # origin	git@github.com:aufbaubank/gitme.git (fetch)
+        # origin	git@github.com:aufbaubank/gitme.git (push)
+        #
+        stdout = self.run_command(command + options + subcommand)
+        origin_fetch_line = ''
+        for bline in stdout.splitlines():
+            line = bline.decode('utf-8')
+            if 'origin' in line and '(fetch)' in line:
+                origin_fetch_line = line
+                break
 
-        return cmd_result.stdout.splitlines()[0].decode('utf-8')
+        if origin_fetch_line == '':
+            raise Exception('no git remote found for origin')
+
+        remote_url = origin_fetch_line.split('origin\t')[1].split(' (fetch)')[0]
+
+        return remote_url
 
     def project_url(self):
 
