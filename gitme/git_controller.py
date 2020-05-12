@@ -23,11 +23,13 @@ class Git:
 
         return any(len(diff) != 0 for diff in [untracked, working_diff])
 
-    def create_update_branch(self):
+    def create_update_branch(self, heads=None):
 
         r = self.repo
 
-        heads = r.remote().fetch()
+        if not heads:
+            heads = r.remote().fetch()
+
         remote_head_names = ['/'.join(head.name.split('/')[1:]) for head in heads]
         logging.info('heads: ' + ', '.join(remote_head_names))
 
