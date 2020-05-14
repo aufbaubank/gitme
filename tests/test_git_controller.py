@@ -46,7 +46,17 @@ class TestGitController:
         gc.create_untracked()
         gc.track_all()
 
-        git.create_update_branch()
+        assert git.create_update_branch()
+
+    def test_create_update_branch_new_and_untracked(self):
+        args = create_argparser(['-g', '/tmp/gitme'])
+
+        gc = Gitcommand()
+        git = Git(args)
+
+        gc.create_untracked()
+
+        assert git.create_update_branch()
 
     # def test_create_update_branch_existing(self):
     #

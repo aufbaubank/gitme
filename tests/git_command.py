@@ -29,7 +29,7 @@ class Gitcommand:
             os.system(cmd)
 
     def __del__(self):
-        # self.__remove_gitdir()
+        self.__remove_gitdir()
         pass
 
     def __remove_gitdir(self):

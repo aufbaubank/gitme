@@ -43,7 +43,7 @@ class Git:
 
     def commit(self, message):
         r = self.repo
-        r.git.add(u=True)
+        r.git.add('.')
         prev_commit = r.head.commit
         commit = r.index.commit(message)
         logging.info(

@@ -79,9 +79,10 @@ def main():
 
         if not git.create_update_branch():
             logger.info('changes already committed to update branch')
-        else:
-            logger.info('changes need to be pushed')
-            git.push()
+            sys.exit(0)
+
+        logger.info('changes need to be pushed')
+        git.push()
 
         glc = GitlabClient(args)
         glc.create_update_mergerequest()
