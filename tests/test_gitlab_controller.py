@@ -67,11 +67,10 @@ class TestGitlabController:
 
     def test_run_command(self):
 
-        stdout = GitlabClient.run_command(['echo', '123'])
+        args = create_argparser(TestGitlabController.minimal_args)
+        gl_client = GitlabClient(args)
 
-        assert stdout
-
-        output_str = stdout.decode('utf-8')
+        output_str = gl_client.run_command(['echo', '123'])
 
         assert isinstance(output_str, str)
         assert output_str == '123\n'
