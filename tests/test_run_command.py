@@ -15,7 +15,7 @@ class TestRunCommand:
 
     def test_version(self, script_runner):
 
-        version_regex = re.compile('[0-9]\\.[0-9]?.[0-9]?\\n')
+        version_regex = re.compile('([0-9]+\\.){2}[0-9]+\\n')
         version = gitme.__version__
         ret = script_runner.run('gitme', '--version')
 

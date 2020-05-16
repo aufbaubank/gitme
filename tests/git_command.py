@@ -11,22 +11,7 @@ class Gitcommand:
         self.__remove_gitdir()
         os.system('git -C /tmp clone https://github.com/aufbaubank/gitme')
 
-        for i in ['file1', 'file2']:
-            with open(self.dir + '/' + i, 'w') as f:
-                f.write('initial content\n\n')
-
         self.cmd_base = 'git -C ' + self.dir + ' '
-
-        sequence = [
-            self.cmd_base + 'init --quiet',
-            self.cmd_base + 'add .',
-            self.cmd_base + 'config user.email "you@example.com"',
-            self.cmd_base + 'config user.name "Your Name"',
-            self.cmd_base + 'commit -m "initial commit" --quiet',
-        ]
-
-        for cmd in sequence:
-            os.system(cmd)
 
     def __del__(self):
         self.__remove_gitdir()
@@ -37,6 +22,20 @@ class Gitcommand:
             os.remove(self.dir)
         elif os.path.isdir(self.dir):
             shutil.rmtree(self.dir)
+
+    def construct_command(self, additional_params):
+
+        if isinstance(additional_params, str):
+            ary = additional_params.split(' ')
+        elif isinstance(additional_params, bytearray):
+            ary = additional_params
+        else:
+            raise Exception('parameter not allowed : ' + additional_params)
+
+        base = self.cmd_base.split(' ')[:-1]
+        cmd = base + ary
+
+        return cmd
 
     def create_untracked(self):
         for i in ['ut1', 'ut2']:
@@ -56,7 +55,17 @@ class Gitcommand:
         os.system(self.cmd_base + 'checkout ' + branch + ' --quiet')
 
     def count_commits(self):
-        base = self.cmd_base.split(' ')[:-1]
-        arguments = base + ['log', '--pretty=oneline']
-        ret = subprocess.run(arguments, stdout=subprocess.PIPE)
+        cmd = self.construct_command('log --pretty=oneline')
+        ret = subprocess.run(cmd, stdout=subprocess.PIPE)
         return len(ret.stdout.splitlines())
+
+    def get_user_name(self):
+        cmd = self.construct_command('config user.name')
+        decoded_stdout = subprocess.run(cmd, stdout=subprocess.PIPE).stdout.decode('utf-8')
+        return decoded_stdout
+
+    def get_user_email(self):
+        cmd = self.construct_command('config user.email')
+        decoded_stdout = subprocess.run(cmd, stdout=subprocess.PIPE).stdout.decode('utf-8')
+        return decoded_stdout
+

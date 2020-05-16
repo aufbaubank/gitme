@@ -1,6 +1,10 @@
 from git import Repo
 import git
 import logging
+import socket
+
+
+from gitme.command_controller import CommandController
 
 
 class Git:
@@ -13,6 +17,12 @@ class Git:
         self.commit_message = 'update files'
 
         self.repo = Repo(self.dir)
+        self.run_command = CommandController.run_command
+
+        self.git_user_attributes = {
+            'name': 'gitme',
+            'email': 'gitme@' + socket.gethostname()
+        }
 
     def is_modified(self):
 
@@ -22,6 +32,25 @@ class Git:
         untracked = self.repo.untracked_files
 
         return any(len(diff) != 0 for diff in [untracked, working_diff])
+
+    def ssh_config_user(self):
+
+        user_attributes = ['name', 'email']
+
+        cmd_base = ['git']
+        if self.dir != '':
+            cmd_base.append('-C')
+            cmd_base.append(self.dir)
+        cmd_base.append('config')
+
+        for attr in user_attributes:
+
+            cmd_attr = cmd_base + ['user.' + attr]
+            existing_attr = self.run_command(cmd_attr)
+
+            if existing_attr != self.git_user_attributes[attr]:
+                cmd_set_attr = cmd_attr + [self.git_user_attributes[attr]]
+                self.run_command(cmd_set_attr)
 
     def create_update_branch(self, heads=None):
 
@@ -33,6 +62,7 @@ class Git:
         remote_head_names = ['/'.join(head.name.split('/')[1:]) for head in heads]
         logging.info('heads: ' + ', '.join(remote_head_names))
 
+        self.ssh_config_user()
         self.change_to_update_branch(remote_head_names)
 
         modified = self.is_modified()

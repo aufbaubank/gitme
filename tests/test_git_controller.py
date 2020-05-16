@@ -1,9 +1,10 @@
-import os
-
+import re
+import socket
 
 from .git_command import Gitcommand
 from gitme.git_controller import Git
 from gitme.entrypoint import create_argparser
+from gitme.command_controller import CommandController
 
 
 class TestGitController:
@@ -57,6 +58,18 @@ class TestGitController:
         gc.create_untracked()
 
         assert git.create_update_branch()
+
+    def test_ssh_config_user(self):
+        args = create_argparser(['-g', '/tmp/gitme'])
+
+        gc = Gitcommand()
+        git = Git(args)
+
+        git.ssh_config_user()
+
+        assert 'gitme\n' == gc.get_user_name()
+        assert 'gitme@' + socket.gethostname() + '\n' == gc.get_user_email()
+        assert re.match(r'gitme@[a-zA-Z0-9.-]+\n', gc.get_user_email())
 
     # def test_create_update_branch_existing(self):
     #

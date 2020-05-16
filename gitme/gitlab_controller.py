@@ -1,9 +1,10 @@
 import requests
 import urllib.parse
-import subprocess
 import logging
 import os
 import re
+
+from gitme.command_controller import CommandController
 
 
 class GitlabClient:
@@ -26,6 +27,7 @@ class GitlabClient:
 
         self.port_pattern = re.compile(':[0-9]*(/)?')
         self.baseurl = args.url
+        self.run_command = CommandController.run_command
 
     def extract_gitlab_project_name(self, first_line):
 
@@ -44,10 +46,6 @@ class GitlabClient:
             stripped_git = stripped_git[:-4]
 
         return stripped_git
-
-    @staticmethod
-    def run_command(argv):
-        return subprocess.run(argv, stdout=subprocess.PIPE).stdout
 
     def git_remote_url(self):
 
@@ -69,8 +67,7 @@ class GitlabClient:
         #
         stdout = self.run_command(command + options + subcommand)
         origin_fetch_line = ''
-        for bline in stdout.splitlines():
-            line = bline.decode('utf-8')
+        for line in stdout.splitlines():
             if 'origin' in line and '(fetch)' in line:
                 origin_fetch_line = line
                 break
