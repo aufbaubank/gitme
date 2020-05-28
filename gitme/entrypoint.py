@@ -49,6 +49,11 @@ def create_argparser(args):
         default='critical', type=str,
         help='loglevel: critical(default), error, warning, info, debug'
     )
+    argp.add_argument(
+        '-m', '--message',
+        default='update files', type=str,
+        help='push message and merge title'
+    )
 
     argp.add_argument('-v', '--verbose', action='count', default=0)
 
@@ -77,12 +82,11 @@ def main():
             logger.info('no files changed')
             sys.exit(0)
 
-        if not git.create_update_branch():
+        if git.create_update_branch():
+            logger.info('changes need to be pushed')
+            git.push()
+        else:
             logger.info('changes already committed to update branch')
-            sys.exit(0)
-
-        logger.info('changes need to be pushed')
-        git.push()
 
         glc = GitlabClient(args)
         glc.create_update_mergerequest()

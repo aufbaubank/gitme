@@ -2,6 +2,7 @@ from gitme.entrypoint import create_argparser
 from gitme.gitlab_controller import GitlabClient
 import re
 
+
 class TestGitlabController:
 
     minimal_args = [
