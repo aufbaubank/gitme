@@ -10,5 +10,7 @@ class CommandController:
 
         output = subprocess.run(argv, stdout=subprocess.PIPE).stdout.decode('utf-8')
 
-        logging.debug('COMMAND OUTPUT: ' + output)
+        if len(output) != 0:
+            logging.debug('COMMAND OUTPUT: ' + output)
+
         return output

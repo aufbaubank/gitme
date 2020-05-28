@@ -14,7 +14,7 @@ class Git:
         self.dir = args.gitrepo
         self.branch = args.branch
 
-        self.commit_message = 'update files'
+        self.commit_message = args.message
 
         self.repo = Repo(self.dir)
         self.run_command = CommandController.run_command

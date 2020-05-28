@@ -14,7 +14,7 @@ class GitlabClient:
     def __init__(self, args):
 
         self.branch = args.branch
-        self.commit_message = 'update files'
+        self.commit_message = args.message
         self.automerge = args.automerge
         self.git_dir = args.gitrepo
 
@@ -96,6 +96,12 @@ class GitlabClient:
         if len(kwargs.keys()) > 0:
             params = kwargs
 
+        # enable to pass protected keywords to kwargs
+        prefix = 'python_protected_word_'
+        cleaned_params = {}
+        for key in params:
+            cleaned_params[key.replace(prefix, '')] = params[key]
+
         headers = {
             "Private-Token": self.token
         }
@@ -103,7 +109,7 @@ class GitlabClient:
         url = self.project_url() + endpoint
         response = getattr(requests, method)(
             url,
-            params=params,
+            params=cleaned_params,
             headers=headers,
             verify=True)
 
@@ -133,8 +139,12 @@ class GitlabClient:
         # search for merge request
         return self.__get(
             '/merge_requests',
+            state='opened',
             source_branch=self.branch,
-            target_branch='master'
+            target_branch='master',
+            with_merge_status_recheck='true',
+            search=self.commit_message,
+            python_protected_word_in='title'
         )
 
     def check_permissions(self, project):
@@ -158,7 +168,7 @@ class GitlabClient:
             '/merge_requests',
             source_branch=self.branch,
             target_branch='master',
-            title='update files',
+            title=self.commit_message,
             remove_source_branch=True,
             allow_collaboration=True,
             description=
