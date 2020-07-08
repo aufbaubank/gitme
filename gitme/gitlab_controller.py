@@ -205,7 +205,7 @@ class GitlabClient:
 
         mrs = self.req_mrs()
 
-        active_mrs = [mr for mr in mrs if mr['title'] == 'update files' and mr['state'] == 'opened']
+        active_mrs = [mr for mr in mrs if mr['title'] == self.commit_message and mr['state'] == 'opened']
 
         if len(active_mrs) == 0:
             self.create_merge_request()
