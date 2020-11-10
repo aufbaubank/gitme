@@ -142,7 +142,6 @@ class GitlabClient:
             state='opened',
             source_branch=self.branch,
             target_branch='master',
-            with_merge_status_recheck='true',
             search=self.commit_message,
             python_protected_word_in='title'
         )
